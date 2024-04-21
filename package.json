@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "NODE_ENV=production nodemon server.js",
     "migrate": "sequelize db:migrate",
-    "deploy": "node server.js"
+    "deploy": "NODE_ENV=production sequelize db:migrate && node server.js"
   },
   "author": "",
   "license": "ISC",
