@@ -15,13 +15,12 @@
       "dialect": "postgres"
     },
     "production": {
-      "production": {
         "username": "cert_app8_user",
         "password": "zYUSLe3eAFp52bMwaIdbFaPWukGuA4sz",
         "database": "cert_app8",
         "host": "dpg-co1gibla73kc73cernsg-a.oregon-postgres.render.com",
         "dialect": "postgres"
-      }
+   
     }
   }
   
