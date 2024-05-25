@@ -2,6 +2,48 @@
 
 const nodemailer = require("nodemailer");
 
+async function sendVerificationEmail(email, token) {
+  console.log("email",email)
+  console.log("token",process.env.Email)
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      service: "gmail",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.Email,
+        pass: process.env.pass,
+      },
+    });
+
+    const verificationLink = `http://localhost:443/api/auth/user/verify/${token}`;
+
+    const mailOptions = {
+      from: `${process.env.Email}`,
+      to: email,
+      subject: `Account Verification`,
+      html: `
+        <h1>Welcome to Zameen Visit</h1>
+        <p>Dear User,</p>
+        <p>Please click the link below to verify your account:</p>
+        <a href="${verificationLink}">Verify Account</a>
+        <p>If you have any questions, feel free to reply to this email. We're here to help!</p>
+        <p>Best,</p>
+        <p>The Zameen Visit Team</p>
+      `,
+    };
+
+    // Send the email
+    const info = await transporter.sendMail(mailOptions);
+    ////console.log("Email sent successfully:", info.response);
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+}
+
+
 
 async function sendEmailWithAttachment(email ,linkPath) {
 
@@ -24,7 +66,7 @@ async function sendEmailWithAttachment(email ,linkPath) {
         from: `${process.env.Email} `,
         to: email,
         subject: `Project Initation`,
-        text: `Hi Dear,\n click the below link to join the Builder Pro \n ${linkPath}`,
+        text: `Hi Dear,\n click the below link to join the Zameen Visit \n ${linkPath}`,
       };
   
       // Send the email
@@ -52,8 +94,16 @@ async function sendEmailWithAttachment(email ,linkPath) {
         from: `${process.env.Email} `,
         to: email,
         subject: `Password Reset OTP`,
-        text: `Hi Dear,\n Your OTP for password reset is ${otp}`,
+        html: `
+        <h1>Password Reset OTP</h1>
+        <p>Dear User,</p>
+        <p>Your OTP for password reset is ${otp}. Please use this OTP to reset your password.</p>
+        <p>If you did not request a password reset, please ignore this email or contact support if you have any concerns.</p>
+        <p>Best,</p>
+        <p>The Zameen Visit Team</p>
+      `,
       };
+
   
       // Send the email
       const info = await transporter.sendMail(mailOptions);
@@ -62,5 +112,4 @@ async function sendEmailWithAttachment(email ,linkPath) {
       console.error("Error sending email:", error);
     }
   }
-
-  module.exports ={sendEmailWithAttachment,sendForgotPasswordEmail} 
+  module.exports = { sendEmailWithAttachment, sendForgotPasswordEmail, sendVerificationEmail };

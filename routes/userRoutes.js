@@ -6,6 +6,7 @@ const userController = require('../controllers/userController')
 router.post('/login',userController.loginUser)
 router.post('/loginWithGoogle',userController.loginwithGoogle)
 router.post('/register',userController.registerUser)
+router.get('/verify/:token', userController.verifyUser);
 router.post('/forgotPassword', userController.forgotPassword);
 router.post('/resendOtp', userController.resendOtp);
 router.post('/verifyOtp', userController.verifyOtp);

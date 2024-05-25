@@ -30,8 +30,16 @@ module.exports = (sequelize, DataTypes) => {
     imageUrl: DataTypes.ARRAY(DataTypes.STRING),
     location: DataTypes.JSON,
     features: DataTypes.ARRAY(DataTypes.STRING),
-    propertyType: DataTypes.ENUM('House', 'Apartment', 'Condo'),
+    propertyType: DataTypes.STRING,
     status: DataTypes.ENUM('for-sale', 'sold', 'pending'),
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
   }, {
     sequelize,
     modelName: 'property',

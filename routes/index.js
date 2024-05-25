@@ -6,7 +6,6 @@ const propertyRoutes = require("../routes/propertyRoutes")
 router.use('/api/auth/user', userRoutes);
 router.use('/api/property', propertyRoutes);
 router.get('/api', function (req, res) {
-   ////console.log(process.env.S3_BUCKET_NAME)
    res.send('Hello, ZameenVisit Server =>  this is the main route!');
 
 });

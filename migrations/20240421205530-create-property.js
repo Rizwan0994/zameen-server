@@ -29,6 +29,8 @@ module.exports = {
       features: Sequelize.ARRAY(Sequelize.STRING),
       propertyType: Sequelize.ENUM('House', 'Apartment', 'Condo'),
       status: Sequelize.ENUM('for-sale', 'sold', 'pending'),
+      isVerified: Sequelize.BOOLEAN,
+      isDeleted: Sequelize.BOOLEAN,
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
