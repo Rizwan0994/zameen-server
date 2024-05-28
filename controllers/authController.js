@@ -295,7 +295,7 @@ const verifyOtp = async (req, res) => {
 
   user.otp = null;
   user.otpExpire = null;
-  user.isVerified = true;  //for signup scenerio
+  user.verified = true;  //for signup scenerio
   await user.save();
 
   const userData = {  //for signup scenerio
@@ -309,7 +309,7 @@ const verifyOtp = async (req, res) => {
     image: user.image,
   };
   const token = await generateToken(res, userData.id);  //for signup scenerio
-  res.status(200).json({ message: 'OTP is valid', token, user: userData });
+  res.status(200).json({ message: 'OTP Verified', token, user: userData });
 };
 const resetPassword = async (req, res) => {
   const { password, confirmPassword, email } = req.body;
