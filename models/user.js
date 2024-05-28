@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     otp: DataTypes.STRING, 
     otpExpire: DataTypes.DATE,
+    isAgent: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     isDeleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false

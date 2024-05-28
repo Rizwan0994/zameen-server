@@ -1,8 +1,8 @@
 
 const jwt =require('jsonwebtoken')
-
+const { JWT_SECRET_KEY} = require("../constants/auth.constant");
 const generateToken = (res, userId) => {
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ userId }, JWT_SECRET_KEY, {
     expiresIn: '30d',
   });
 

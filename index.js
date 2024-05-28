@@ -15,6 +15,7 @@ const init =require("./socket/index.js");
 app.use(cors());
 require("dotenv").config();
 app.use(cookieParser());
+app.use(require("morgan")(':remote-addr - :remote-user - [:date[clf]] - ":method :url HTTP/:http-version" - :status - :res[content-length] B -  :response-time ms'))
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
