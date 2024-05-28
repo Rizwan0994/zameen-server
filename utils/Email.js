@@ -2,7 +2,7 @@
 
 const nodemailer = require("nodemailer");
 
-async function sendVerificationEmail(email, token) {
+async function sendVerificationEmail(email, otp) {
   console.log("email",email)
   console.log("token",process.env.Email)
 
@@ -18,7 +18,7 @@ async function sendVerificationEmail(email, token) {
       },
     });
 
-    const verificationLink = `http://localhost:443/api/auth/user/verify/${token}`;
+    const verificationLink = `http://localhost:443/api/auth/user/verify/${otp}`;
 
     const mailOptions = {
       from: `${process.env.Email}`,
@@ -27,8 +27,8 @@ async function sendVerificationEmail(email, token) {
       html: `
         <h1>Welcome to Zameen Visit</h1>
         <p>Dear User,</p>
-        <p>Please click the link below to verify your account:</p>
-        <a href="${verificationLink}">Verify Account</a>
+        <p>Please click the OTP below to verify your account:</p>
+        <p>Your OTP is ${otp}. Please use this OTP to Set your Account.</p>
         <p>If you have any questions, feel free to reply to this email. We're here to help!</p>
         <p>Best,</p>
         <p>The Zameen Visit Team</p>

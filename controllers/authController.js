@@ -58,38 +58,27 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+//otp verificatin 
 const registerUser = async (req, res) => {
   const { name, email, phoneNumber, password, role, image, termsConditions,isAgent } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-
   try {
     const existingUser = await UserModel.findOne({ where: { email } });
-    if (existingUser && !existingUser.verified) {
-      // If the user exists but is not verified, resend the verification email
-      const oldVerificationToken = await VerificationTokenModel.findOne({ where: { userId: existingUser.id } });
-      if (oldVerificationToken && (Date.now() - oldVerificationToken.createdAt < 60000)) {
-        // If a verification token was created within the last minute, return an error
-        return res.status(400).json({ error: "Please wait a minute before requesting a new verification email." });
-      } else if (oldVerificationToken) {
-        // If an old verification token exists, delete it
-        await oldVerificationToken.destroy();
-      }
 
-      // Create a new verification token
-      const newVerificationToken = await VerificationTokenModel.create({
-        userId: existingUser.id,
-        token: crypto.randomBytes(20).toString('hex'),
-        expires: Date.now() + 1800000 // 30 minutes
-      });
 
-      sendVerificationEmail(email, newVerificationToken.token);
-      return res.status(200).json({ message: "Verification email resent. Please check your email." });
-    } else if (existingUser) {
-      return res.status(400).json({ error: "User with this email already exists!" });
+    if (existingUser && !existingUser.iverified) {
+      // Generate a 5-digit OTP
+      const otp = Math.floor(10000 + Math.random() * 90000).toString();
+
+      existingUser.otp = otp;
+      existingUser.otpExpire = Date.now() + 300000; // OTP expires after 5 minutes
+      await existingUser.save();
+
+      await sendVerificationEmail(existingUser.email, otp);
+      return res
+        .status(200)
+        .json({ success: true, message: "User already Exits, Just Need Verification, Check Email!", redirectTo: "verifyOtp" });
     }
+
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const obj = {
@@ -103,26 +92,111 @@ const registerUser = async (req, res) => {
       verified: false,
       isAgent: isAgent||false
     }
-
     const newUser = await UserModel.create({ ...obj
-    });
+          });
+      
+    if (newUser) {
+      const otp = Math.floor(10000 + Math.random() * 90000).toString();
 
-    const verificationToken = await VerificationTokenModel.create({
-      userId: newUser.id,
-      token: crypto.randomBytes(20).toString('hex'),
-      expires: Date.now() + 1800000 // 30 minutes
-    });
+      newUser.otp = otp;
+      newUser.otpExpire = Date.now() + 300000;
+      await newUser.save();
+      await sendVerificationEmail(newUser.email, otp);
+      res
+        .status(201)
+        .json({ success: true, message: "Please Check Your Email for Verification" });
+    } else {
+      res
+        .status(201)
+        .json({ success: false, message: "Error Sending Email for Verification" });
+    }
+    // const userData = {
+    //   id: newUser.id,
+    //   firstName: newUser.firstName,
+    //   lastName: newUser.lastName,
+    //   email: newUser.email,
+    //   companyName: newUser.companyName,
+    //   phoneNumber: newUser.phoneNumber,
+    //   role: newUser.role,
+    //   image: newUser.image,
+    // };
 
-    sendVerificationEmail(email, verificationToken.token);
-
-  
-
-    res.status(201).json({ message: "User registered successfully. Please check your email to verify your account." });
+    // const token = await generateToken(res, userData.id);
+    // res
+    //   .status(201)
+    //   .json({ message: "User registered successfully", token, user: userData });
   } catch (err) {
     console.error("Error registering user:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+//token verification
+// const registerUser = async (req, res) => {
+//   const { name, email, phoneNumber, password, role, image, termsConditions,isAgent } = req.body;
+
+//   if (!email || !password) {
+//     return res.status(400).json({ error: "All fields are required" });
+//   }
+
+//   try {
+//     const existingUser = await UserModel.findOne({ where: { email } });
+//     if (existingUser && !existingUser.verified) {
+//       // If the user exists but is not verified, resend the verification email
+//       const oldVerificationToken = await VerificationTokenModel.findOne({ where: { userId: existingUser.id } });
+//       if (oldVerificationToken && (Date.now() - oldVerificationToken.createdAt < 60000)) {
+//         // If a verification token was created within the last minute, return an error
+//         return res.status(400).json({ error: "Please wait a minute before requesting a new verification email." });
+//       } else if (oldVerificationToken) {
+//         // If an old verification token exists, delete it
+//         await oldVerificationToken.destroy();
+//       }
+
+//       // Create a new verification token
+//       const newVerificationToken = await VerificationTokenModel.create({
+//         userId: existingUser.id,
+//         token: crypto.randomBytes(20).toString('hex'),
+//         expires: Date.now() + 1800000 // 30 minutes
+//       });
+
+//       sendVerificationEmail(email, newVerificationToken.token);
+//       return res.status(200).json({ message: "Verification email resent. Please check your email." });
+//     } else if (existingUser) {
+//       return res.status(400).json({ error: "User with this email already exists!" });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     const obj = {
+//       email: email,
+//       password: hashedPassword,
+//       name: name,
+//       phoneNumber: phoneNumber,
+//       role: role,
+//       image: image,
+//       termsConditions: termsConditions,
+//       verified: false,
+//       isAgent: isAgent||false
+//     }
+
+//     const newUser = await UserModel.create({ ...obj
+//     });
+
+//     const verificationToken = await VerificationTokenModel.create({
+//       userId: newUser.id,
+//       token: crypto.randomBytes(20).toString('hex'),
+//       expires: Date.now() + 1800000 // 30 minutes
+//     });
+
+//     sendVerificationEmail(email, verificationToken.token);
+
+  
+
+//     res.status(201).json({ message: "User registered successfully. Please check your email to verify your account." });
+//   } catch (err) {
+//     console.error("Error registering user:", err);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 const verifyUser = async (req, res) => {
   try {
     const token = req.params.token;
@@ -221,11 +295,22 @@ const verifyOtp = async (req, res) => {
 
   user.otp = null;
   user.otpExpire = null;
+  user.isVerified = true;  //for signup scenerio
   await user.save();
 
-  res.status(200).json({ success: true, message: 'OTP is Verified' });
+  const userData = {  //for signup scenerio
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    companyName: user.companyName,
+    phoneNumber: user.phoneNumber,
+    role: user.role,
+    image: user.image,
+  };
+  const token = await generateToken(res, userData.id);  //for signup scenerio
+  res.status(200).json({ message: 'OTP is valid', token, user: userData });
 };
-
 const resetPassword = async (req, res) => {
   const { password, confirmPassword, email } = req.body;
 
