@@ -11,6 +11,7 @@ router.post('/forgotPassword', userController.forgotPassword);
 router.post('/resendOtp', userController.resendOtp);
 router.post('/verifyOtp', userController.verifyOtp);
 router.post('/resetPassword', userController.resetPassword);
+router.post('/verfiyToken',userController.verfiyToken)
 // router.post('/logout',userController.logoutUser)
 
 

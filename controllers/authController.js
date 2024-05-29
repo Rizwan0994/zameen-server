@@ -7,6 +7,7 @@ const {
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { sendEmailWithAttachment, sendForgotPasswordEmail ,sendVerificationEmail} = require("../utils/Email");
+const { decodeToken } = require("../middlewares/authentication");
 const loginUser = asyncHandler(async (req, res) => {
   const userCredentials = req.body;
 
@@ -355,6 +356,25 @@ const loginwithGoogle = async (req, res) => {
 
 
 
+const verfiyToken = async (req, res) => {
+  try {
+      const token = req.headers["x-access-token"];
+      console.log("token",token)
+      const data = decodeToken(token)
+     
+      const findUser = await UserModel.findOne({
+          where: { id: data.userId, isDeleted: false, verified: true}
+      });
+   
+      if (!findUser) {
+        return res.status(400).send({ success:false,message: "Token Invalid."
+        } );
+      }
+      return res.status(200).send({ user: {...findUser?.dataValues}, message: "Token Valid.",success:true });
+  } catch (error) {
+      throw error;
+  }
+}
 
 module.exports = {
     loginUser,
@@ -365,7 +385,7 @@ module.exports = {
     resetPassword,
     resendOtp,
 
-
+    verfiyToken,
     loginwithGoogle,
   
   };
