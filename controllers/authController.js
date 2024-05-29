@@ -13,7 +13,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const userEmail = userCredentials.email;
   const userPassword = userCredentials.password;
   if (!userEmail || !userPassword) {
-    res.status(400).json({ message: "All fields are required" });
+    res.status(400).json({success:false, message: "All fields are required" });
     return;
   }
 
@@ -22,19 +22,19 @@ const loginUser = asyncHandler(async (req, res) => {
 
   if (!userVar) {
     // User not found
-    res.status(401).json({ message: "Invalid email or password" });
+    res.status(401).json({success:false, message: "Invalid email or password" });
     return;
   }
   //check if user verified or not
   if (!userVar.verified) {
-    return res.status(400).json({ error: "User not verified" });
+    return res.status(400).json({success:false, error: "User not verified" });
   }
 
   // Compare passwords
   const isPasswordMatch = await bcrypt.compare(userPassword, userVar.password);
   //check if password match or not
    if (!isPasswordMatch) {
-    return res.status(400).json({ error: "Invalid email or password" });
+    return res.status(400).json({success:false, error: "Invalid email or password" });
   }
 
 
@@ -50,11 +50,11 @@ const loginUser = asyncHandler(async (req, res) => {
     const token = await generateToken(res, userVar.id);
    
     // Passwords match, login successful
-    res.status(200).json({ message: "Login successful", token, user: userResponse });
+    res.status(200).json({ success:true ,message: "Login successful", token, user: userResponse });
 
   } else {
     // Passwords do not match
-    res.status(401).json({ message: "Invalid email or password" });
+    res.status(401).json({success:false, message: "Invalid email or password" });
   }
 });
 
@@ -76,7 +76,7 @@ const registerUser = async (req, res) => {
       await sendVerificationEmail(existingUser.email, otp);
       return res
         .status(200)
-        .json({ success: true, message: "User already Exits, Just Need Verification, Check Email!", redirectTo: "verifyOtp" });
+        .json({ success: true, message: "User already Exits, Just Need Verification, Check Email!", redirectTo: "verifyOtp" ,email});
     }
 
 
@@ -104,7 +104,7 @@ const registerUser = async (req, res) => {
       await sendVerificationEmail(newUser.email, otp);
       res
         .status(201)
-        .json({ success: true, message: "Please Check Your Email for Verification" });
+        .json({ success: true, message: "Please Check Your Email for Verification" ,email});
     } else {
       res
         .status(201)
@@ -203,11 +203,11 @@ const verifyUser = async (req, res) => {
     const verificationToken = await VerificationTokenModel.findOne({ where: { token } });
 
     if (!verificationToken) {
-      return res.status(400).json({ error: "Invalid or expired verification token." });
+      return res.status(400).json({success:false, error: "Invalid or expired verification token." });
     }
 
     if (Date.now() > verificationToken.expires) {
-      return res.status(400).json({ error: "Verification token has expired. Please register again." });
+      return res.status(400).json({success:false, error: "Verification token has expired. Please register again." });
     }
 
     const user = await UserModel.findOne({ where: { id: verificationToken.userId } });
@@ -217,10 +217,10 @@ const verifyUser = async (req, res) => {
     // Delete the verification token
     await verificationToken.destroy();
 
-    res.status(200).json({ message: "User verified successfully." });
+    res.status(200).json({success:true, message: "User verified successfully." });
   } catch (err) {
     console.error("Error verifying user:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({success:false, error: "Internal Server Error" });
   }
 };
 
@@ -248,7 +248,7 @@ const forgotPassword = async (req, res) => {
 
   await sendForgotPasswordEmail(user.email, otp);
 
-  res.status(200).json({ success: true, message: 'OTP sent to email' });
+  res.status(200).json({ success: true, message: 'OTP sent to email' ,email});
 };
 
 const resendOtp = async (req, res) => {
@@ -309,7 +309,7 @@ const verifyOtp = async (req, res) => {
     image: user.image,
   };
   const token = await generateToken(res, userData.id);  //for signup scenerio
-  res.status(200).json({ message: 'OTP Verified', token, user: userData });
+  res.status(200).json({success:true, message: 'OTP Verified', token, user: userData });
 };
 const resetPassword = async (req, res) => {
   const { password, confirmPassword, email } = req.body;
