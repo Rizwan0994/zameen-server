@@ -16,6 +16,10 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       title: Sequelize.STRING,
       description: Sequelize.TEXT,
       purpose: Sequelize.ENUM('sale', 'rent'),

@@ -2,7 +2,8 @@ const {property: PropertyModel } = require('../models');
 
 const createProperty = async (req, res) => {
   try {
-    const property = await PropertyModel.create(req.body);
+    const userId = req.loginUser.id;
+    const property = await PropertyModel.create({...req.body, userId});
     res.status(201).json(property);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -21,6 +22,16 @@ const getProperty = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+//get property of a user
+const getUserProperties = async (req, res) => {
+  try {
+    const userId = req.loginUser.id;
+    const properties = await PropertyModel.findAll({ where: { userId } });
+    res.status(200).json(properties);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 //get all properties
 const getAllProperties = async (req, res) => {
   try {
@@ -31,8 +42,143 @@ const getAllProperties = async (req, res) => {
   }
 };
 
+
+
+
+const searchProperties = async (req, res) => {
+  try {
+    const { location, city, propertyType, minPrice, maxPrice, minAreaSize, maxAreaSize, areaUnit } = req.query;
+ console.log("search query: ",req.query)
+    const where = {};
+    const areaSizeWhere = {};
+
+    if (location) {
+      where['location.address'] = location;
+    }
+    if (city) {
+      where['location.city'] = city;
+    }
+    if (propertyType) {
+      where.propertyType = propertyType;
+    }
+    if (minPrice || maxPrice) {
+      where.price = {};
+      if (minPrice) {
+        where.price['$gte'] = minPrice;
+      }
+      if (maxPrice) {
+        where.price['$lte'] = maxPrice;
+      }
+    }
+    if ((minAreaSize || maxAreaSize) && areaUnit) {
+      if (minAreaSize) {
+        areaSizeWhere['$gte'] = minAreaSize;
+      }
+      if (maxAreaSize) {
+        areaSizeWhere['$lte'] = maxAreaSize;
+      }
+      where['areaSize.size'] = areaSizeWhere;
+      where['areaSize.unit'] = areaUnit;
+    }
+
+    const properties = await PropertyModel.findAll({ where: where });
+
+    res.status(200).json(properties);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createProperty,
   getProperty,
-    getAllProperties
+    getAllProperties,
+    searchProperties,
+    getUserProperties
 };
+
+
+
+/* fututre work for optimization 
+const { Client } = require('@elastic/elasticsearch');
+const client = new Client({ node: 'http://localhost:9200' });
+
+const searchProperties = async (req, res) => {
+  try {
+    const { location,city, propertyType, minPrice, maxPrice, minAreaSize, maxAreaSize } = req.query;
+
+    const body = {
+      query: {
+        bool: {
+          must: [],
+          filter: []
+        }
+      }
+    };
+
+    if (location) {
+      body.query.bool.must.push({
+        match: { 'location.address': location }
+      });
+    }
+    if (city) {
+      body.query.bool.must.push({
+        match: { 'location.city': city }
+      });
+    }
+
+    if (propertyType) {
+      body.query.bool.filter.push({
+        term: { propertyType: propertyType }
+      });
+    }
+
+    if (minPrice || maxPrice) {
+      const priceRange = {};
+      if (minPrice) {
+        priceRange.gte = minPrice;
+      }
+      if (maxPrice) {
+        priceRange.lte = maxPrice;
+      }
+      body.query.bool.filter.push({
+        range: { price: priceRange }
+      });
+    }
+
+    if ((minAreaSize || maxAreaSize) && areaUnit) {
+      const areaSizeRange = {};
+      if (minAreaSize) {
+        areaSizeRange.gte = minAreaSize;
+      }
+      if (maxAreaSize) {
+        areaSizeRange.lte = maxAreaSize;
+      }
+      body.query.bool.filter.push({
+        nested: {
+          path: "areaSize",
+          query: {
+            bool: {
+              must: [
+                { range: { "areaSize.size": areaSizeRange } },
+                { match: { "areaSize.unit": areaUnit } }
+              ]
+            }
+          }
+        }
+      });
+    }
+
+    const { body: { hits: { hits } } } = await client.search({
+      index: 'properties',
+      body: body
+    });
+
+    const properties = hits.map(hit => hit._source);
+    res.status(200).json(properties);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+*/
