@@ -28,28 +28,28 @@ const loginUser = asyncHandler(async (req, res) => {
   }
   //check if user verified or not
   if (!userVar.verified) {
-    return res.status(400).json({success:false, error: "User not verified" });
+    return res.status(400).json({success:false, message: "User not verified" });
   }
 
   // Compare passwords
   const isPasswordMatch = await bcrypt.compare(userPassword, userVar.password);
   //check if password match or not
   if (!isPasswordMatch) {
-    return res.status(401).json({success:false, error: "Invalid email or password" });
+    return res.status(401).json({success:false, message: "Invalid email or password" });
   }
-
+  const token = await generateToken(res, userVar.id);
   const userResponse = {
-    id: userVar.id,
     email: userVar.email,
     name: userVar.name,
     phoneNumber: userVar.phoneNumber,
     role: userVar.role,
     image: userVar.image,
+    token: token,
   };
-  const token = await generateToken(res, userVar.id);
+ 
    
   // Passwords match, login successful
-  res.status(200).json({ success:true ,message: "Login successful", token, user: userResponse });
+  res.status(200).json({ success:true ,message: "Login successful",  user: userResponse });
 });
 
 //otp verificatin 
