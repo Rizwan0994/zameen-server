@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       unique: true // Adding unique constraint to email field
     },
     phoneNumber: DataTypes.STRING,
+    address: DataTypes.STRING,
+    whatsappNumber: DataTypes.STRING,
+    country: DataTypes.STRING,
+    city: DataTypes.STRING,
     password: {
       type: DataTypes.STRING,
       allowNull: true
