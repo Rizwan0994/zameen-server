@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     whatsappNumber: DataTypes.STRING,
     country: DataTypes.STRING,
     city: DataTypes.STRING,
+    
     password: {
       type: DataTypes.STRING,
       allowNull: true

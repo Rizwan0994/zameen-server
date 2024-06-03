@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { sendEmailWithAttachment, sendForgotPasswordEmail ,sendVerificationEmail} = require("../utils/Email");
 const { decodeToken } = require("../middlewares/authentication");
+const { count } = require("console");
 const loginUser = asyncHandler(async (req, res) => {
   const userCredentials = req.body;
 
@@ -44,6 +45,10 @@ const loginUser = asyncHandler(async (req, res) => {
     phoneNumber: userVar.phoneNumber,
     role: userVar.role,
     image: userVar.image,
+    address: userVar.address,
+    country: userVar.country,
+    city: userVar.city,
+    whatsappNumber: userVar.whatsappNumber,
     token: token,
   };
  

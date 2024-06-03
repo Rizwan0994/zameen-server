@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     location: DataTypes.JSON,
     features: DataTypes.ARRAY(DataTypes.STRING),
     propertyType: DataTypes.STRING,
-    status: DataTypes.ENUM('for-sale', 'sold', 'pending'),
+    status: DataTypes.STRING,
     isVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
