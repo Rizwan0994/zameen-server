@@ -3,6 +3,7 @@ const {property: PropertyModel } = require('../models');
 const createProperty = async (req, res) => {
   try {
     const userId = req.loginUser.id;
+    
     const property = await PropertyModel.create({...req.body, userId});
     res.status(201).json(property);
   } catch (error) {

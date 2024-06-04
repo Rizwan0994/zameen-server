@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
-    purpose: DataTypes.ENUM('sale', 'rent'),
+    purpose: DataTypes.STRING,
     price: DataTypes.DECIMAL,
     bedrooms: DataTypes.INTEGER,
     bathrooms: DataTypes.INTEGER,
@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     features: DataTypes.ARRAY(DataTypes.STRING),
     propertyType: DataTypes.STRING,
     status: DataTypes.STRING,
+    builddate: DataTypes.DATE,    
     isVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
