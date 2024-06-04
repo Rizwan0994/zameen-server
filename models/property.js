@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     contactNumber: DataTypes.STRING,
     contactEmail: DataTypes.STRING,
     location: DataTypes.JSON,
-    features: DataTypes.ARRAY(DataTypes.STRING),
+    features: DataTypes.JSON,
     propertyType: DataTypes.STRING,
     status: DataTypes.STRING,
     builddate: DataTypes.DATE,    

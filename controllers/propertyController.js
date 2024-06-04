@@ -49,7 +49,7 @@ const getAllProperties = async (req, res) => {
 const searchProperties = async (req, res) => {
   try {
     const { location, city, propertyType, minPrice, maxPrice, minAreaSize, maxAreaSize, areaUnit } = req.query;
- console.log("search query: ",req.query)
+    console.log("search query: ",req.query)
     const where = {};
     const areaSizeWhere = {};
 
@@ -65,22 +65,22 @@ const searchProperties = async (req, res) => {
     if (minPrice || maxPrice) {
       where.price = {};
       if (minPrice) {
-        where.price['$gte'] = minPrice;
+        where.price.$gte = Number(minPrice);
       }
       if (maxPrice) {
-        where.price['$lte'] = maxPrice;
+        where.price.$lte = Number(maxPrice);
       }
     }
     if ((minAreaSize || maxAreaSize) && areaUnit) {
       if (minAreaSize) {
-        areaSizeWhere['$gte'] = minAreaSize;
+        where['areaSize.size'] = { ...where['areaSize.size'], '$gte': Number(minAreaSize) };
       }
       if (maxAreaSize) {
-        areaSizeWhere['$lte'] = maxAreaSize;
+        where['areaSize.size'] = { ...where['areaSize.size'], '$lte': Number(maxAreaSize) };
       }
-      where['areaSize.size'] = areaSizeWhere;
       where['areaSize.unit'] = areaUnit;
     }
+    console.log("where: ",where)
 
     const properties = await PropertyModel.findAll({ where: where });
 
