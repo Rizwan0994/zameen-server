@@ -8,5 +8,6 @@ router.get('/getProperty/:id',userController.getProperty)
 router.get('/getAllProperties',userController.getAllProperties)
 router.get('/searchProperties',userController.searchProperties)
 router.get('/getUserProperties',userController.getUserProperties)
+router.post('deleteProperty' userController.deleteProperty);
 
 module.exports = router;
