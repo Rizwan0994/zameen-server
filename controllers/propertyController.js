@@ -5,7 +5,7 @@ const createProperty = async (req, res) => {
     const userId = req.loginUser.id;
     
     const property = await PropertyModel.create({...req.body, userId});
-    res.status(201).jsons({property,success:true, message: "Property created successfully!"});
+    res.status(201).json({property,success:true, message: "Property created successfully!"});
   } catch (error) {
     res.status(500).json({ message: error.message,success:false });
   }
