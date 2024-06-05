@@ -110,12 +110,32 @@ const searchProperties = async (req, res) => {
   }
 };
 
+//delete property
+const deleteProperty = async (req, res) => {
+  try {
+    const {propertyId} = req.body;
+    const property = await PropertyModel.findByPk(propertyId);
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found', success: false });
+    }
+
+    property.isDeleted = true;
+    await property.save();
+
+    res.status(200).json({ success: true, message: "Property deleted successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+
 module.exports = {
   createProperty,
   getProperty,
     getAllProperties,
     searchProperties,
-    getUserProperties
+    getUserProperties,
+  deleteProperty
 };
 
 
