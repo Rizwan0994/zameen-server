@@ -1,21 +1,27 @@
-const {property: PropertyModel } = require('../models');
+const {property: PropertyModel,user:UserModel } = require('../models');
 
 const createProperty = async (req, res) => {
   try {
     const userId = req.loginUser.id;
     
     const property = await PropertyModel.create({...req.body, userId});
-    res.status(201).json(property);
+    res.status(201).jsons({property,success:true, message: "Property created successfully!"});
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message,success:false });
   }
 };
 
 const getProperty = async (req, res) => {
   try {
-    const property = await PropertyModel.findByPk(req.params.id);
+    const property = await PropertyModel.findByPk(req.params.id, {
+      include: [{
+        model: UserModel,
+        as: 'user',
+        attributes: ['name', 'email', 'phoneNumber', 'address', 'city', 'country','whatsappNumber','image','isAgent'], // specify the attributes you want to include
+      }]
+    });
     if (property) {
-      res.status(200).json(property);
+      res.status(200).json({property,success:true, message: "Property get successfully!"});
     } else {
       res.status(404).json({ message: 'Property not found' });
     }
@@ -27,19 +33,33 @@ const getProperty = async (req, res) => {
 const getUserProperties = async (req, res) => {
   try {
     const userId = req.loginUser.id;
-    const properties = await PropertyModel.findAll({ where: { userId } });
-    res.status(200).json(properties);
+    console.log("userId",userId)
+    const properties = await PropertyModel.findAll({ 
+      where: { userId },
+      include: [{
+        model: UserModel,
+        as: 'user',
+        attributes: ['name', 'email', 'phoneNumber', 'address', 'city', 'country','whatsappNumber','image','isAgent'], // specify the attributes you want to include
+      }]
+    });
+    res.status(200).json({properties,success:true, message: "Property get successfully!"});
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message,success:false });
   }
 };
 //get all properties
 const getAllProperties = async (req, res) => {
   try {
-    const properties = await PropertyModel.findAll();
-    res.status(200).json(properties);
+    const properties = await PropertyModel.findAll({
+      include: [{
+        model: UserModel,
+        as: 'user',
+        attributes: ['name', 'email', 'phoneNumber', 'address', 'city', 'country','whatsappNumber','image','isAgent'], // specify the attributes you want to include
+      }]
+    });
+    res.status(200).json({properties,success:true, message: "Property get successfully!"});
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message,success:false });
   }
 };
 
@@ -84,7 +104,7 @@ const searchProperties = async (req, res) => {
 
     const properties = await PropertyModel.findAll({ where: where });
 
-    res.status(200).json(properties);
+    res.status(200).json({properties,success:true, message: "Property get successfully!"});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

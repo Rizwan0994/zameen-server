@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         User.hasOne(models.verificationtoken, { foreignKey: 'userId', as: 'verificationtoken' });
         this.hasMany(models.property, { foreignKey: 'userId', as: 'properties' });
     }
+    
   }
   User.init({
     name: DataTypes.STRING,
@@ -64,3 +65,4 @@ module.exports = (sequelize, DataTypes) => {
   });
   return User;
 };
+
