@@ -1,4 +1,5 @@
 const {property: PropertyModel,user:UserModel } = require('../models');
+const { Op, where } = require('sequelize');
 
 const createProperty = async (req, res) => {
   try {
@@ -14,6 +15,7 @@ const createProperty = async (req, res) => {
 const getProperty = async (req, res) => {
   try {
     const property = await PropertyModel.findByPk(req.params.id, {
+      where: { isDeleted: false },
       include: [{
         model: UserModel,
         as: 'user',
@@ -35,7 +37,7 @@ const getUserProperties = async (req, res) => {
     const userId = req.loginUser.id;
     console.log("userId",userId)
     const properties = await PropertyModel.findAll({ 
-      where: { userId },
+      where: { userId,isDeleted: false },
       include: [{
         model: UserModel,
         as: 'user',
@@ -51,6 +53,7 @@ const getUserProperties = async (req, res) => {
 const getAllProperties = async (req, res) => {
   try {
     const properties = await PropertyModel.findAll({
+      where: {isDeleted:false},
       include: [{
         model: UserModel,
         as: 'user',
@@ -68,10 +71,10 @@ const getAllProperties = async (req, res) => {
 
 const searchProperties = async (req, res) => {
   try {
-    const { location, city, propertyType, minPrice, maxPrice, minAreaSize, maxAreaSize, areaUnit } = req.query;
+    const { location, city, propertyType, priceMin, priceMax, areaMin, areaMax, areaUnit,page = 1, pageSize = 10 } = req.query;
     console.log("search query: ",req.query)
-    const where = {};
-    const areaSizeWhere = {};
+    const where = { isDeleted: false };
+
 
     if (location) {
       where['location.address'] = location;
@@ -82,27 +85,28 @@ const searchProperties = async (req, res) => {
     if (propertyType) {
       where.propertyType = propertyType;
     }
-    if (minPrice || maxPrice) {
-      where.price = {};
-      if (minPrice) {
-        where.price.$gte = Number(minPrice);
+    if (priceMin || priceMax) {
+      if (priceMin) {
+        where.price = { ...where.price, [Op.gte]: Number(priceMin) };
       }
-      if (maxPrice) {
-        where.price.$lte = Number(maxPrice);
+      if (priceMax) {
+        where.price = { ...where.price, [Op.lte]: Number(priceMax) };
       }
     }
-    if ((minAreaSize || maxAreaSize) && areaUnit) {
-      if (minAreaSize) {
-        where['areaSize.size'] = { ...where['areaSize.size'], '$gte': Number(minAreaSize) };
+    if ((areaMin || areaMax) && areaUnit) {
+      if (areaMin) {
+        where['areaSize.size'] = { ...where['areaSize.size'], '$gte': Number(areaMin) };
       }
-      if (maxAreaSize) {
-        where['areaSize.size'] = { ...where['areaSize.size'], '$lte': Number(maxAreaSize) };
+      if (areaMax) {
+        where['areaSize.size'] = { ...where['areaSize.size'], '$lte': Number(areaMax) };
       }
       where['areaSize.unit'] = areaUnit;
     }
     console.log("where: ",where)
+    const offset = (page - 1) * pageSize;
+    const limit = Number(pageSize);
 
-    const properties = await PropertyModel.findAll({ where: where });
+    const properties = await PropertyModel.findAll({ where: where,offset: offset, limit: limit });
 
     res.status(200).json({properties,success:true, message: "Property get successfully!"});
   } catch (error) {

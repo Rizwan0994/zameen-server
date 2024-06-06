@@ -69,6 +69,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       user: {
         name: user.name,
         phoneNumber: user.phoneNumber,
+        email: user.email,
         image: user.image,
         address: user.address,
         country: user.country,
