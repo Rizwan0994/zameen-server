@@ -115,7 +115,14 @@ const searchProperties = async (req, res) => {
     const offset = (page - 1) * pageSize;
     const limit = Number(pageSize);
 
-    const properties = await PropertyModel.findAll({ where: where, offset: offset, limit: limit });
+    const properties = await PropertyModel.findAll({
+       where: where,
+       include: [{
+        model: UserModel,
+        as: 'user',
+        attributes: ['name', 'email', 'phoneNumber', 'address', 'city', 'country','whatsappNumber','image','isAgent'], // specify the attributes you want to include
+      }],
+      offset: offset, limit: limit });
 
     res.status(200).json({ properties, success: true, message: "Property get successfully!" });
   } catch (error) {
