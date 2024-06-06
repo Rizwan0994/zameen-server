@@ -68,25 +68,23 @@ const getAllProperties = async (req, res) => {
 
 
 
-
 const searchProperties = async (req, res) => {
   try {
-    const { location, city,purpose, propertyType, priceMin, priceMax, areaMin, areaMax, areaUnit,page = 1, pageSize = 10 } = req.query;
-    console.log("search query: ",req.query)
+    const { location, city, purpose, propertyType, priceMin, priceMax, areaMin, areaMax, areaUnit, page = 1, pageSize = 10 } = req.query;
+    console.log("search query: ", req.query);
     const where = { isDeleted: false };
 
-
     if (location) {
-      where['location.address'] = location;
+      where['location.address'] = { [Op.iLike]: `%${location}%` };
     }
     if (city) {
-      where['location.city'] = city;
+      where['location.city'] = { [Op.iLike]: `%${city}%` };
     }
     if (propertyType) {
-      where.propertyType = propertyType;
+      where.propertyType = { [Op.iLike]: `%${propertyType}%` };
     }
-    if(purpose){
-      where.purpose=purpose;
+    if (purpose) {
+      where.purpose = { [Op.iLike]: `%${purpose}%` };
     }
     if (priceMin || priceMax) {
       if (priceMin) {
@@ -98,20 +96,20 @@ const searchProperties = async (req, res) => {
     }
     if ((areaMin || areaMax) && areaUnit) {
       if (areaMin) {
-        where['areaSize.size'] = { ...where['areaSize.size'], '$gte': Number(areaMin) };
+        where['areaSize.size'] = { ...where['areaSize.size'], [Op.gte]: Number(areaMin) };
       }
       if (areaMax) {
-        where['areaSize.size'] = { ...where['areaSize.size'], '$lte': Number(areaMax) };
+        where['areaSize.size'] = { ...where['areaSize.size'], [Op.lte]: Number(areaMax) };
       }
       where['areaSize.unit'] = areaUnit;
     }
-    console.log("where: ",where)
+    console.log("where: ", where);
     const offset = (page - 1) * pageSize;
     const limit = Number(pageSize);
 
-    const properties = await PropertyModel.findAll({ where: where,offset: offset, limit: limit });
+    const properties = await PropertyModel.findAll({ where: where, offset: offset, limit: limit });
 
-    res.status(200).json({properties,success:true, message: "Property get successfully!"});
+    res.status(200).json({ properties, success: true, message: "Property get successfully!" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
