@@ -35,18 +35,35 @@ const getProperty = async (req, res) => {
 const getUserProperties = async (req, res) => {
   try {
     const userId = req.loginUser.id;
-    console.log("userId",userId)
-    const properties = await PropertyModel.findAll({ 
-      where: { userId,isDeleted: false },
+    const { page = 1, pageSize = 10 } = req.query;
+
+    console.log("userId", userId);
+    
+    const offset = (page - 1) * pageSize;
+    const limit = Number(pageSize);
+
+    const { count, rows: properties } = await PropertyModel.findAndCountAll({ 
+      where: { userId, isDeleted: false },
       include: [{
         model: UserModel,
         as: 'user',
-        attributes: ['name', 'email', 'phoneNumber', 'address', 'city', 'country','whatsappNumber','image','isAgent'], // specify the attributes you want to include
-      }]
+        attributes: ['name', 'email', 'phoneNumber', 'address', 'city', 'country', 'whatsappNumber', 'image', 'isAgent'], // specify the attributes you want to include
+      }],
+      offset,
+      limit
     });
-    res.status(200).json({properties,success:true, message: "Property get successfully!"});
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    res.status(200).json({
+      properties,
+      success: true,
+      message: "Properties retrieved successfully!",
+      totalPages,
+      totalCount: count
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message,success:false });
+    res.status(500).json({ message: error.message, success: false });
   }
 };
 //get all properties
@@ -163,7 +180,7 @@ const getLatestProperties = async (req, res) => {
     const properties = await PropertyModel.findAll({
       where: { isDeleted: false },
       order: [['createdAt', 'DESC']],
-      limit: 8
+      limit: 9
     });
 
     res.status(200).json({properties,success:true, message: "Property get successfully!"});
