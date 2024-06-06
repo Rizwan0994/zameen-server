@@ -70,7 +70,15 @@ const getAllProperties = async (req, res) => {
 
 const searchProperties = async (req, res) => {
   try {
-    const { location, city, purpose, propertyType, priceMin, priceMax, areaMin, areaMax, areaUnit, page = 1, pageSize = 10 } = req.query;
+    const { location, city, purpose, propertyType, areaMin, areaMax, areaUnit, page = 1, pageSize = 10 } = req.query;
+    let { priceMin,priceMax } = req.query;
+    //if price is is like 100,000 then it will be converted to 100000
+    if (priceMin) {
+      priceMin = priceMin.replace(/,/g, '');
+    }
+    if (priceMax) {
+      priceMax = priceMax.replace(/,/g, '');
+    }
     console.log("search query: ", req.query);
     const where = { isDeleted: false };
 
@@ -84,7 +92,7 @@ const searchProperties = async (req, res) => {
       where.propertyType = { [Op.iLike]: `%${propertyType}%` };
     }
     if (purpose) {
-      where.purpose = { [Op.iLike]: `%${purpose}%` };
+      where.purpose = { [Op.iLike]: `%${purpose.toLowerCase()}%` };
     }
     if (priceMin || priceMax) {
       if (priceMin) {
