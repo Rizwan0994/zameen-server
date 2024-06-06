@@ -71,7 +71,7 @@ const getAllProperties = async (req, res) => {
 
 const searchProperties = async (req, res) => {
   try {
-    const { location, city, propertyType, priceMin, priceMax, areaMin, areaMax, areaUnit,page = 1, pageSize = 10 } = req.query;
+    const { location, city,purpose, propertyType, priceMin, priceMax, areaMin, areaMax, areaUnit,page = 1, pageSize = 10 } = req.query;
     console.log("search query: ",req.query)
     const where = { isDeleted: false };
 
@@ -84,6 +84,9 @@ const searchProperties = async (req, res) => {
     }
     if (propertyType) {
       where.propertyType = propertyType;
+    }
+    if(purpose){
+      where.purpose=purpose;
     }
     if (priceMin || priceMax) {
       if (priceMin) {
@@ -133,13 +136,29 @@ const deleteProperty = async (req, res) => {
   }
 };
 
+//find latest 8 properties
+const getLatestProperties = async (req, res) => {
+  try {
+    const properties = await PropertyModel.findAll({
+      where: { isDeleted: false },
+      order: [['createdAt', 'DESC']],
+      limit: 8
+    });
+
+    res.status(200).json({properties,success:true, message: "Property get successfully!"});
+  } catch (error) {
+    res.status(500).json({ message: error.message,success:false });
+  }
+}
+
 module.exports = {
   createProperty,
   getProperty,
     getAllProperties,
     searchProperties,
     getUserProperties,
-  deleteProperty
+  deleteProperty,
+  getLatestProperties
 };
 
 
