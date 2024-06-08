@@ -112,4 +112,64 @@ async function sendEmailWithAttachment(email ,linkPath) {
       console.error("Error sending email:", error);
     }
   }
-  module.exports = { sendEmailWithAttachment, sendForgotPasswordEmail, sendVerificationEmail };
+
+
+  async function sendContactEmail(contact) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        service: "gmail",
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.Email,
+          pass: process.env.pass,
+        },
+      });
+  
+      // Email to the user
+      //    <p>Message: ${contact.message}</p>
+      const userMailOptions = {
+        from: `${process.env.Email}`,
+        to: contact.email,
+        subject: `Thank you for contacting us!`,
+        html: `
+          <h1>Thank you for contacting us!</h1>
+          <p>Dear ${contact.name},</p>
+          <p>We have received your message and will get back to you soon.</p>
+      
+          <p>If you have any questions, feel free to reply to this email. We're here to help!</p>
+          <p>Best,</p>
+          <p>The Zameen Visit Team</p>
+        `,
+      };
+  
+      // Email to the admin
+      const adminMailOptions = {
+        from: `${process.env.Email}`,
+        to: process.env.ADMIN_EMAIL,  // Admin email address stored in environment variable
+        subject: `New Contact Message from ${contact.name}`,
+        html: `
+          <h1>New Contact Message</h1>
+          <p><strong>Name:</strong> ${contact.name}</p>
+          <p><strong>Email:</strong> ${contact.email}</p>
+          <p><strong>Mobile Number:</strong> ${contact.mobileNumber}</p>
+          <p><strong>Message:</strong> ${contact.message}</p>
+          <p><strong>Interest:</strong> ${contact.interest}</p>
+          
+        `,
+      };
+  
+      // Send the email to the user
+      await transporter.sendMail(userMailOptions);
+      console.log("User email sent successfully");
+  
+      // Send the email to the admin
+      await transporter.sendMail(adminMailOptions);
+      console.log("Admin email sent successfully");
+  
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+  }
+  module.exports = { sendEmailWithAttachment, sendForgotPasswordEmail, sendVerificationEmail ,sendContactEmail};

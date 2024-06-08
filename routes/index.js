@@ -13,10 +13,11 @@ router.use('/api/auth', authRoutes);
 router.get('/getAllProperties',userController.getAllProperties)
 router.get('/searchProperties',userController.searchProperties)
 router.get('/searchProperties',userController.searchProperties)
+router.use('/api/contact', contactRoutes);
 router.use(jwtValidation);
 router.use('/api/user', userRoutes);
 router.use('/api/property', propertyRoutes);
-router.use('/api/contact', contactRoutes);
+
 router.get('/api', function (req, res) {
    res.send('Hello, ZameenVisit Server =>  this is the main api route!');
 
