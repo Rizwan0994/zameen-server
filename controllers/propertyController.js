@@ -179,6 +179,11 @@ const getLatestProperties = async (req, res) => {
   try {
     const properties = await PropertyModel.findAll({
       where: { isDeleted: false },
+      include: [{
+        model: UserModel,
+        as: 'user',
+        attributes: ['name', 'email', 'phoneNumber', 'address', 'city', 'country','whatsappNumber','image','isAgent'], // specify the attributes you want to include
+      }],
       order: [['createdAt', 'DESC']],
       limit: 9
     });

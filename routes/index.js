@@ -10,9 +10,9 @@ const userController = require('../controllers/propertyController');
 router.use('/api/auth', authRoutes);
 
 
-router.get('/getAllProperties',userController.getAllProperties)
-router.get('/searchProperties',userController.searchProperties)
-router.get('/searchProperties',userController.searchProperties)
+router.get('/api/property/getAllProperties',userController.getAllProperties)
+router.get('/api/property/searchProperties',userController.searchProperties)
+router.get('/api/property/getLatestProperties',userController.getLatestProperties)
 router.use('/api/contact', contactRoutes);
 router.use(jwtValidation);
 router.use('/api/user', userRoutes);
