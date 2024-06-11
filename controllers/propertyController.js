@@ -49,8 +49,8 @@ const getUserProperties = async (req, res) => {
         as: 'user',
         attributes: ['name', 'email', 'phoneNumber', 'address', 'city', 'country', 'whatsappNumber', 'image', 'isAgent'], // specify the attributes you want to include
       }],
-      offset,
-      limit
+      // offset,
+      // limit
     });
 
     const totalPages = Math.ceil(count / pageSize);
