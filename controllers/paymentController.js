@@ -16,7 +16,7 @@ const createStripeSession = asyncHandler(async (req, res) => {
       currency: 'pkr',
       product_data: {
         name: item.title, // Changed from item.name to item.title
-        images: [item.image],
+        images: [item.image||'https://via.placeholder.com/150'],
       },
       unit_amount: item.price * 100, // Stripe expects amount in cents/pence
     },

@@ -199,7 +199,7 @@ const promoteProperty = async (req, res) => {
   try {
     const { propertyId,  productId} = req.body;
     // const userId = req.loginUser.id;
-    const userId=1;
+    const userId=req.loginUser.id||1;
     const paymentMethod = req.body.paymentMethod || 'Credit Card';
     // Check if the product exists and is a valid promotion type
     const product = await ProductModel.findByPk(productId);
