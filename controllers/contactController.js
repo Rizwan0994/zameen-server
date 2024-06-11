@@ -36,6 +36,13 @@ const getContacts = asyncHandler(async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
     });
+    //subscribe to newsletter
+    // const subscribe = asyncHandler(async (req, res) => {
+    //     const data = req.body;
+    //     try {
+    //         // Create a new contact
+    //         const contact = await ContactModel.create(data);
+    
 
 
 

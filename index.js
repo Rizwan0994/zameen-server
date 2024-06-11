@@ -9,6 +9,8 @@ const app = express();
 const http = require("http");
 const cors = require("cors");
 const appRoutes = require("./routes/index.js")
+const setupCronJobs = require('./cronJobs'); 
+const logger = require('./logger');
 
 const init =require("./socket/index.js");
 
@@ -23,20 +25,12 @@ app.use(bodyParser.json());
 
 const server = http.createServer(app);
 app.use("/", appRoutes);
-// function getDirPath() {
-//   if (process.pkg) {
-//     return path.resolve(process.execPath + "/..");
-//   } else {
-//     return path.join(require.main ? require.main.path : process.cwd());
-//   }
-// }
 
 // if (process.env.NODE_ENV === "production") {
 //   console.log("Running in production!");
 //   app.use(express.static(path.join("./build")));
 //   app.get("*", (req, res) => {
-//     res.sendFile(path.resolve(getDirPath(), "build", "index.html"));
-//     // console.log(getDirPath());
+//     res.sendFile(path.resolve(path_Name, "build", "index.html"));
 //   });
 // }
 
@@ -66,6 +60,9 @@ sequelize
     console.error("Unable to connect to the database:", err);
   });
 
-server.listen(443, () => {
+  setupCronJobs(); // Setup cron jobs
+  const PORT = process.env.PORT || 443;
+
+server.listen(PORT, () => {
   console.log("SERVER IS RUNNING on 443");
 });

@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.user, { foreignKey: 'userId', as: 'user' });
+      this.hasMany(models.payment, { foreignKey: 'propertyId', as: 'payments' });
     }
   }
   Property.init({
@@ -36,6 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     videoUrl: DataTypes.ARRAY(DataTypes.STRING),
     contactNumber: DataTypes.STRING,
     contactEmail: DataTypes.STRING,
+    whatsAppNumber: DataTypes.STRING,
     location: DataTypes.JSON,
     features: DataTypes.JSON,
     propertyType: DataTypes.STRING,
@@ -48,6 +50,14 @@ module.exports = (sequelize, DataTypes) => {
     isDeleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    promotionType: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    promotionEndDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   }, {
     sequelize,

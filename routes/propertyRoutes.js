@@ -10,6 +10,7 @@ router.get('/searchProperties',userController.searchProperties)
 router.get('/getUserProperties',userController.getUserProperties)
 router.get('/getLatestProperties',userController.getLatestProperties)
 router.post('/deleteProperty' ,userController.deleteProperty);
+router.post('/promote', userController.promoteProperty);
 
 
 module.exports = router;

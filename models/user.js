@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         // define association here
         User.hasOne(models.verificationtoken, { foreignKey: 'userId', as: 'verificationtoken' });
         this.hasMany(models.property, { foreignKey: 'userId', as: 'properties' });
+        this.hasMany(models.payment, { foreignKey: 'userId', as: 'payments' });
     }
     
   }

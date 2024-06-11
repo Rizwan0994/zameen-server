@@ -1,6 +1,6 @@
-const {property: PropertyModel,user:UserModel } = require('../models');
+const {property: PropertyModel,user:UserModel,payment:PaymentModel, product:ProductModel } = require('../models');
 const { Op, where } = require('sequelize');
-
+const logger = require('../logger'); // Import the logger
 const createProperty = async (req, res) => {
   try {
     const userId = req.loginUser.id;
@@ -194,6 +194,98 @@ const getLatestProperties = async (req, res) => {
   }
 }
 
+
+const promoteProperty = async (req, res) => {
+  try {
+    const { propertyId,  productId} = req.body;
+    // const userId = req.loginUser.id;
+    const userId=1;
+    const paymentMethod = req.body.paymentMethod || 'Credit Card';
+    // Check if the product exists and is a valid promotion type
+    const product = await ProductModel.findByPk(productId);
+    if (!product || !product.promotionType) {
+      logger.warn(`Invalid product with ID: ${productId}`);
+      return res.status(400).json({ success: false, message: 'Invalid product.' });
+    }
+
+    // Create a new payment record
+    const payment = await PaymentModel.create({
+      amount: product.price,
+      paymentMethod: paymentMethod,
+      paymentStatus: 'Paid',
+      userId: userId,
+      propertyId: propertyId
+    });
+
+    // Verify the payment status
+    if (payment.paymentStatus !== 'Paid') {
+      logger.warn(`Payment not successful for property ID: ${propertyId} by user ID: ${userId}`);
+      return res.status(400).json({ success: false, message: 'Payment not successful.' });
+    }
+
+    // Calculate end date for promotion
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + product.durationDays);
+
+    // Update the property with the promotion details
+    const property = await PropertyModel.findByPk(propertyId);
+    property.promotionType = product.promotionType;
+    property.promotionEndDate = endDate;
+    await property.save();
+
+    logger.info(`Property ID: ${propertyId} promoted successfully for user ID: ${userId}`);
+
+    res.status(200).json({ success: true, message: 'Property promoted successfully!', property });
+  } catch (error) {logger.error(`Error promoting property ID: ${propertyId}`, { error: error.message });
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+//not in use...
+const promotePropertyFun = async (propertyId, productId, userId = 1, paymentMethod = 'Credit Card') => {
+  try {
+    // Check if the product exists and is a valid promotion type
+    const product = await ProductModel.findByPk(productId);
+    if (!product || !product.promotionType) {
+      logger.warn(`Invalid product with ID: ${productId}`);
+      return { success: false, message: 'Invalid product.' };
+    }
+
+    // Create a new payment record
+    const payment = await PaymentModel.create({
+      amount: product.price,
+      paymentMethod: paymentMethod,
+      paymentStatus: 'Paid',
+      userId: userId,
+      propertyId: propertyId
+    });
+
+    // Verify the payment status
+    if (payment.paymentStatus !== 'Paid') {
+      logger.warn(`Payment not successful for property ID: ${propertyId} by user ID: ${userId}`);
+      return { success: false, message: 'Payment not successful.' };
+    }
+
+    // Calculate end date for promotion
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + product.durationDays);
+
+    // Update the property with the promotion details
+    const property = await PropertyModel.findByPk(propertyId);
+    property.promotionType = product.promotionType;
+    property.promotionEndDate = endDate;
+    await property.save();
+
+    logger.info(`Property ID: ${propertyId} promoted successfully for user ID: ${userId}`);
+
+    return { success: true, message: 'Property promoted successfully!', property };
+  } catch (error) {
+    logger.error(`Error promoting property ID: ${propertyId}`, { error: error.message });
+    return { success: false, message: error.message };
+  }
+};
+
+
 module.exports = {
   createProperty,
   getProperty,
@@ -201,7 +293,9 @@ module.exports = {
     searchProperties,
     getUserProperties,
   deleteProperty,
-  getLatestProperties
+  getLatestProperties,
+  promoteProperty,
+  promotePropertyFun
 };
 
 
