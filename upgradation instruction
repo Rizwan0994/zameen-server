@@ -1,0 +1,5 @@
+if project upgradation  required then use these steps:
+
+Install npm-check-updates globally by running npm install -g npm-check-updates in your terminal.
+Run ncu -u in your project directory. This will upgrade all the version hints in the package.json file to the latest versions.
+Run npm install to install the new versions of your dependencies.
