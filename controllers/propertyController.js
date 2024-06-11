@@ -198,6 +198,7 @@ const getLatestProperties = async (req, res) => {
 const promoteProperty = async (req, res) => {
   try {
     const { propertyId,  productId} = req.body;
+    console.log("promoteProperty req.body", req.body);
     // const userId = req.loginUser.id;
     const userId=req.loginUser.id||1;
     const paymentMethod = req.body.paymentMethod || 'Credit Card';
@@ -236,8 +237,9 @@ const promoteProperty = async (req, res) => {
     logger.info(`Property ID: ${propertyId} promoted successfully for user ID: ${userId}`);
 
     res.status(200).json({ success: true, message: 'Property promoted successfully!', property });
-  } catch (error) {logger.error(`Error promoting property ID: ${propertyId}`, { error: error.message });
-    res.status(500).json({ success: false, message: error.message });
+  } catch (error) {
+    logger.error(`Error promoting property ID: ${propertyId}`, { error: error });
+    res.status(500).json({ success: false, message: error });
   }
 };
 
