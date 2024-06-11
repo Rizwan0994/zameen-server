@@ -8,12 +8,13 @@ const { sendContactEmail} = require("../utils/Email");
 // Create a new contact
 const createContact = asyncHandler(async (req, res) => {
   const data = req.body;
+  const agentEmail = req.body.agentEmail;
   try {
     // Create a new contact
     const contact = await ContactModel.create(data);
     console.log(contact);
     // Send email to the user and admin
-    await sendContactEmail(contact);
+    await sendContactEmail(contact,agentEmail);
 
 
     res.status(201).json({ success: true, data: data, message: "Thanks for contacting us! We will get back to you soon."});
