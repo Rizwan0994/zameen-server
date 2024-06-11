@@ -9,7 +9,7 @@ const createStripeSession = asyncHandler(async (req, res) => {
 
   const redirectURL = process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
-    : 'https://zameen-visit.vercel.app';
+    : 'https://zameen-visit.vercel.app/property-list';
 
   // Ensure to use price_data as specified by the new Stripe API
   const transformedItem = {
