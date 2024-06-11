@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     image: {
       type: DataTypes.STRING,
-      defaultValue: 'https://i.postimg.cc/sxV3gm0H/User-Profile-PNG-Image-removebg-preview.png'
+      defaultValue: 'https://github.com/shadcn.png'
     },
     verified: {
       type: DataTypes.BOOLEAN,
