@@ -16,7 +16,7 @@ const createContact = asyncHandler(async (req, res) => {
     await sendContactEmail(contact);
 
 
-    res.status(201).json({ success: true, data: contact, message: "Thanks for contacting us! We will get back to you soon."});
+    res.status(201).json({ success: true, data: data, message: "Thanks for contacting us! We will get back to you soon."});
   } catch (error) {
     console.log(error);
     res.status(400).json({ success: false, message: error.message });

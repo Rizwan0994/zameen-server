@@ -114,7 +114,7 @@ async function sendEmailWithAttachment(email ,linkPath) {
   }
 
 
-  async function sendContactEmail(contact) {
+  async function sendContactEmail(contact,agentEmail) {
     try {
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -145,9 +145,10 @@ async function sendEmailWithAttachment(email ,linkPath) {
       };
   
       // Email to the admin
+      const receverEmail=agentEmail?agentEmail:process.env.ADMIN_EMAIL;
       const adminMailOptions = {
         from: `${process.env.Email}`,
-        to: process.env.ADMIN_EMAIL,  // Admin email address stored in environment variable
+        to: receverEmail,  // Admin email address stored in environment variable
         subject: `New Contact Message from ${contact.name}`,
         html: `
           <h1>New Contact Message</h1>
