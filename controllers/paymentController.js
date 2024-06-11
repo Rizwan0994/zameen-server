@@ -4,7 +4,8 @@ const { promotePropertyFun } = require('./propertyController');
 
 const createStripeSession = asyncHandler(async (req, res) => {
   const { item } = req.body;
-  console.log('Item:', item);
+  // const { propertyId,  productId} = req.body;
+  // console.log('Item:', item);
 
   const redirectURL = process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
@@ -28,7 +29,7 @@ const createStripeSession = asyncHandler(async (req, res) => {
       payment_method_types: ['card'],
       line_items: [transformedItem],
       mode: 'payment',
-      success_url: `${redirectURL}?status=success`,
+      success_url: `${redirectURL}?status=success&propertyId=${item.propertyId}&productId=${item.productId}`,
       cancel_url: `${redirectURL}?status=cancel`,
       metadata: {
         description: item.description, // Use metadata for additional info
