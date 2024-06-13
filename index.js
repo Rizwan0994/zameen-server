@@ -61,7 +61,7 @@ sequelize
   });
 
   setupCronJobs(); // Setup cron jobs
-  const PORT = process.env.PORT || 8080;
+  const PORT = process.env.PORT || 443;
 
 server.listen(PORT, () => {
   console.log("SERVER IS RUNNING on 443");
