@@ -17,6 +17,7 @@ router.get('/api/property/getAllProperties',userController.getAllProperties)
 router.get('/api/property/searchProperties',userController.searchProperties)
 router.get('/api/property/getLatestProperties',userController.getLatestProperties)
 router.get('/api/property/getProperty/:id',userController.getProperty)
+router.get('/api/property/propertiesFind',userController.propertiesFinder)
 // router.get('/api/property/getProperty/:id',userController.getProperty)
 // router.post('/api/property/promote', userController.promoteProperty);
 router.use('/api/contact', contactRoutes);
