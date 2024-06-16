@@ -155,6 +155,40 @@ const searchProperties = async (req, res) => {
   }
 };
 
+//property finder
+const propertiesFinder = async (req, res) => {
+  try {
+    const { location, city} = req.query;
+    const where = { isDeleted: false };
+
+    if (location) {
+      where['location.address'] = { [Op.iLike]: `%${location}%` };
+    }
+    if (city) {
+      where['location.city'] = { [Op.iLike]: `%${city}%` };
+    }
+   
+
+    const properties = await PropertyModel.findAll({ where,
+      include: [{
+        model: UserModel,
+        as: 'user',
+        attributes: ['name', 'email', 'phoneNumber', 'address', 'city', 'country','whatsappNumber','image','isAgent'], 
+      }],
+      });
+
+   
+
+    res.status(200).json({
+      properties,
+      success: true,
+      message: "Properties get successfully!",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 //delete property
 const deleteProperty = async (req, res) => {
   try {
@@ -297,7 +331,8 @@ module.exports = {
   deleteProperty,
   getLatestProperties,
   promoteProperty,
-  promotePropertyFun
+  promotePropertyFun,
+  propertiesFinder
 };
 
 
