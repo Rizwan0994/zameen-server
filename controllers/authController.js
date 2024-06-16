@@ -91,7 +91,7 @@ const registerUser = async (req, res) => {
       image: image,
       termsConditions: termsConditions,
       verified: false,
-      isAgent: isAgent||false
+      isAgent: role === "agent" ? true : false,
     }
     const newUser = await UserModel.create({ ...obj
           });
