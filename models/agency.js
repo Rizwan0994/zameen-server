@@ -10,7 +10,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Agency.init({
-    userId: DataTypes.INTEGER,
+    userId: {
+      type: DataTypes.INTEGER,
+      unique: true
+    },
     city: DataTypes.STRING,
     agencyName: DataTypes.STRING,
     companyEmail: DataTypes.STRING,
