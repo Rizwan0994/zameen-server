@@ -18,6 +18,7 @@ router.get('/api/property/getAllProperties',propertyController.getAllProperties)
 router.get('/api/property/searchProperties',propertyController.searchProperties)
 router.get('/api/property/getLatestProperties',propertyController.getLatestProperties)
 router.get('/api/property/getProperty/:id',propertyController.getProperty)
+router.get('/api/property/propertiesFind',propertyController.propertiesFinder)
 router.get('/api/agency/getAllAgencies',userController.getAllAgencies)
 // router.get('/api/property/getProperty/:id',userController.getProperty)
 // router.post('/api/property/promote', userController.promoteProperty);
