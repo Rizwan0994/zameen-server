@@ -50,6 +50,8 @@ const loginUser = asyncHandler(async (req, res) => {
     city: userVar.city,
     whatsappNumber: userVar.whatsappNumber,
     token: token,
+    isAgent: userVar.isAgent,
+
   };
  
    
@@ -306,6 +308,7 @@ const verifyOtp = async (req, res) => {
     phoneNumber: user.phoneNumber,
     role: user.role,
     image: user.image,
+    isAgent: user.isAgent,
   };
   const token = await generateToken(res, userData.id);  //for signup scenerio
   res.status(200).json({success:true, message: 'OTP Verified', token, user: userData });
