@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const {
   user:UserModel,
-
+  agency: AgencyModel
 } = require("../models");
 const bcrypt = require("bcrypt");
 
@@ -107,14 +107,107 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
 
 
+const addOrUpdateAgency = asyncHandler(async (req, res) => {
+  const userId = req.loginUser.id;
+  const {
+    city,
+    agencyName,
+    companyEmail,
+    agencyAddress,
+    agencyImage,
+    description,
+    ownerName,
+    message,
+    designation,
+    ownerPicture
+  } = req.body;
+
+  // Find the user by userId
+  const user = await UserModel.findByPk(userId);
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
+
+  // Check if user is an agent
+  if (!user.isAgent) {
+    return res.status(400).json({ success: false, message: 'User is not an agent' });
+  }
+
+  try {
+    // Create or update agency
+    const [agency, created] = await AgencyModel.upsert({
+      userId,
+      city,
+      agencyName,
+      companyEmail,
+      agencyAddress,
+      agencyImage,
+      description,
+      ownerName,
+      message,
+      designation,
+      ownerPicture
+    }, {
+      returning: true
+    });
+
+    res.status(200).json({
+      success: true,
+      message: created ? 'Agency information added successfully' : 'Agency information updated successfully',
+      agency
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Failed to add or update agency information' });
+  }
+});
+
+const getAgency = asyncHandler(async (req, res) => {
+  const userId = req.loginUser.id;
+
+  // Find the user by userId
+  const user = await UserModel.findByPk(userId);
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
+
+  // Check if user is an agent
+  if (!user.isAgent) {
+    return res.status(400).json({ success: false, message: 'User is not an agent' });
+  }
+
+  // Find the agency by userId
+  const agency = await AgencyModel.findOne({
+    where: {
+      userId
+    }
+  });
+
+  if (!agency) {
+    return res.status(404).json({ success: false, message: 'Agency information not found' });
+  }
+
+  res.status(200).json({ success: true, agency });
+});
 
 
-
-
+//get all agencies
+const getAllAgencies = asyncHandler(async (req, res) => {
+  try {
+    const agencies = await AgencyModel.findAll();
+    res.status(200).json({ success: true, agencies, message: 'agency get successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Failed to get agencies' });
+  }
+});
 module.exports = {
   resetProfilePassword,
   updateUserProfile,
   deleteUserProfile,
+  addOrUpdateAgency,
+  getAgency,
+  getAllAgencies
 
 
 };
