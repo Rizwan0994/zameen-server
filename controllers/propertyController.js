@@ -1,5 +1,5 @@
 const {property: PropertyModel,user:UserModel,payment:PaymentModel, product:ProductModel } = require('../models');
-const { Op, where } = require('sequelize');
+const { Op, where , Sequelize} = require('sequelize');
 const logger = require('../logger'); // Import the logger
 const createProperty = async (req, res) => {
   try {
@@ -154,6 +154,49 @@ const searchProperties = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+//find all cities list where all properties listed
+const findCities = async (req, res) => {
+  try {
+    const cities = await PropertyModel.findAll({
+      attributes: [[Sequelize.fn('DISTINCT', Sequelize.json('location.city')), 'city']],
+    });
+
+    const cityList = cities.map(city => city.getDataValue('city'));
+
+    res.status(200).json({ cities: cityList, success: true, message: "Cities get successfully!" });
+  } catch (error) {
+    console.log("error", error);                        
+    res.status(500).json({ message: error.message });
+  }
+};  
+
+const findAddressesByCity = async (req, res) => {
+  const { city } = req.body;
+
+  try {
+    const properties = await PropertyModel.findAll({
+      where: Sequelize.where(
+        Sequelize.json('location.city'),
+        Op.iLike,
+        `%${city}%`
+      ),
+      attributes: [
+        [Sequelize.json('location.city'), 'city'],
+        [Sequelize.json('location.address'), 'address']
+      ],
+    });
+
+    const addresses = properties.map(property => property.getDataValue('address'));
+
+    res.status(200).json({ city, addresses, success: true, message: "Addresses fetched successfully!" });
+  } catch (error) {
+    console.log("error", error);                        
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
 //property finder
 const propertiesFinder = async (req, res) => {
@@ -332,7 +375,9 @@ module.exports = {
   getLatestProperties,
   promoteProperty,
   promotePropertyFun,
-  propertiesFinder
+  propertiesFinder,
+  findCities,
+  findAddressesByCity
 };
 
 

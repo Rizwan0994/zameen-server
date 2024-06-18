@@ -20,6 +20,8 @@ router.get('/api/property/getLatestProperties',propertyController.getLatestPrope
 router.get('/api/property/getProperty/:id',propertyController.getProperty)
 router.get('/api/property/propertiesFind',propertyController.propertiesFinder)
 router.get('/api/agency/getAllAgencies',userController.getAllAgencies)
+router.get('/api/property/cities',propertyController.findCities) 
+router.post('/api/property/findAddressesByCity',propertyController.findAddressesByCity)                                                             
 // router.get('/api/property/getProperty/:id',userController.getProperty)
 // router.post('/api/property/promote', userController.promoteProperty);
 router.use('/api/contact', contactRoutes);
