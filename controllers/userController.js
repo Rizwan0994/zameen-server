@@ -122,6 +122,8 @@ const addOrUpdateAgency = asyncHandler(async (req, res) => {
     ownerPicture
   } = req.body;
 
+  console.log("agency body: ",req.body);
+
   // Find the user by userId
   const user = await UserModel.findByPk(userId);
   if (!user) {
@@ -150,6 +152,8 @@ const addOrUpdateAgency = asyncHandler(async (req, res) => {
     }, {
       returning: true
     });
+
+    console.log("agency db: ",agency);
 
     res.status(200).json({
       success: true,
