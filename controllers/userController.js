@@ -4,7 +4,7 @@ const {
   agency: AgencyModel
 } = require("../models");
 const bcrypt = require("bcrypt");
-
+const { Op, where , Sequelize} = require('sequelize');
 
 
 
@@ -166,7 +166,7 @@ const addOrUpdateAgency = asyncHandler(async (req, res) => {
   }
 });
 
-const getAgency = asyncHandler(async (req, res) => {
+const getUserAgency = asyncHandler(async (req, res) => {
   const userId = req.loginUser.id;
 
   // Find the user by userId
@@ -198,20 +198,99 @@ const getAgency = asyncHandler(async (req, res) => {
 //get all agencies
 const getAllAgencies = asyncHandler(async (req, res) => {
   try {
-    const agencies = await AgencyModel.findAll();
-    res.status(200).json({ success: true, agencies, message: 'agency get successfully' });
+    // filter by category,city,companyName
+    const { category,city, companyName ,location,page = 1, pageSize = 10 } = req.query;
+   const where = {};
+   let agencyAddress = location;                                           
+
+    if (category) {
+      where.category = { [Op.iLike]: `%${category}%` };
+    } 
+    if (city) {
+      where.city = { [Op.iLike]: `%${city}%` };                   
+    }
+    if (companyName) {
+      where.companyName = { [Op.iLike]: `%${companyName}%` };
+
+    }
+    if (agencyAddress) {
+      where.agencyAddress = { [Op.iLike]: `%${agencyAddress}%` };
+    }
+    
+    const offset = (page - 1) * pageSize;
+    const limit = Number(pageSize);
+
+    const {count, rows:agencies} = await AgencyModel.findAndCountAll({                      
+      where,
+      offset,
+      limit
+    });
+    const totalPages = Math.ceil(count / pageSize);
+
+
+    res.status(200).json({ success: true, agencies, message: 'agency get successfully', totalPages, totalCount: count});
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: 'Failed to get agencies' });
   }
 });
+const getAllAgenciesCities= asyncHandler(async (req, res) => {
+  try {
+    const cityObjects = await AgencyModel.findAll({
+      attributes: ['city'],
+      group: ['city']
+    });
+
+    const agencyCities = cityObjects.map(cityObject => cityObject.city);
+
+    res.status(200).json({ success: true, agencyCities, message: 'Cities get successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Failed to get cities' });
+  }
+});  
+
+const findAgencyAddressAndCompanyByCity = asyncHandler(async (req, res) => {
+  const { city } = req.body;
+  try {
+    const agencies = await AgencyModel.findAll({
+      where: {
+        city
+      },
+      attributes: ['agencyAddress', 'companyEmail']
+    });
+
+    res.status(200).json({ success: true, agencies, message: 'Agency address and company email get successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Failed to get agency address and company email' });
+  }
+}); 
+
+//get agency by agency id
+const getAgencyById = asyncHandler(async (req, res) => {
+  const { id } = req.body;
+  try {
+    const agency = await AgencyModel.findByPk(id);
+    res.status(200).json({ success: true, agency, message: 'Agency get successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Failed to get agency' });
+  }
+});                                                                                      
+  
 module.exports = {
   resetProfilePassword,
   updateUserProfile,
   deleteUserProfile,
+
+
   addOrUpdateAgency,
-  getAgency,
-  getAllAgencies
+  getUserAgency,
+  getAllAgencies,
+  getAllAgenciesCities,
+  findAgencyAddressAndCompanyByCity,
+  getAgencyById
 
 
 };

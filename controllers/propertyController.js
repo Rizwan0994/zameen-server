@@ -187,7 +187,7 @@ const findAddressesByCity = async (req, res) => {
       ],
     });
 
-    const addresses = properties.map(property => property.getDataValue('address'));
+    const addresses = [...new Set(properties.map(property => property.getDataValue('address')))];
 
     res.status(200).json({ city, addresses, success: true, message: "Addresses fetched successfully!" });
   } catch (error) {
