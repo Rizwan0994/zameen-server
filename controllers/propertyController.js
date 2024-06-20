@@ -87,7 +87,7 @@ const getAllProperties = async (req, res) => {
 
 const searchProperties = async (req, res) => {
   try {
-    const { location, city, purpose, propertyType, areaMin, areaMax, areaUnit, page = 1, pageSize = 10 } = req.query;
+    const { userId,location, city, purpose, propertyType, areaMin, areaMax, areaUnit, page = 1, pageSize = 10 } = req.query;
     let { priceMin,priceMax } = req.query;
     //if price is is like 100,000 then it will be converted to 100000
     if (priceMin) {
@@ -99,6 +99,9 @@ const searchProperties = async (req, res) => {
     console.log("search query: ", req.query);
     const where = { isDeleted: false };
 
+    if (userId) {
+      where.userId = userId;
+    }
     if (location) {
       where['location.address'] = { [Op.iLike]: `%${location}%` };
     }
