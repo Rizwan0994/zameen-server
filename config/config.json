@@ -1,32 +1,32 @@
 {
-    "development": {
-      "username": "postgres",
-      "password": "postgres",
-      "database": "zameen",
-      "host": "localhost",
-      "port": "5494",
-      "dialect": "postgres"
-    },
-    "test": {
-      "username": "postgres",
-      "password": "1234",
-      "database": "zameen",
-      "host": "localhost",
-      "dialect": "postgres"
-    },
-    "production": {
-      "username": "cert_app8_user",
-      "password": "zYUSLe3eAFp52bMwaIdbFaPWukGuA4sz",
-      "database": "cert_app8",
-      "host": "dpg-co1gibla73kc73cernsg-a.oregon-postgres.render.com",
-      "dialect": "postgres",
-      "ssl": true,
-      "dialectOptions": {
-        "ssl": {
-          "require": true,
-          "rejectUnauthorized": false
-        }
+  "development": {
+    "username": "postgres",
+    "password": "postgres",
+    "database": "zameen",
+    "host": "localhost",
+    "port": "5494",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "1234",
+    "database": "zameen",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres.fvzplvtcsckzdqxizrkw",
+    "password": "postgres@1234",
+    "database": "postgres",
+    "host": "aws-0-ap-southeast-1.pooler.supabase.com",
+    "port": "6543",
+    "dialect": "postgres",
+    "ssl": true,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
       }
     }
   }
-  
+}
