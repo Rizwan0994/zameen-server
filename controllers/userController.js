@@ -1,7 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const {
   user:UserModel,
-  agency: AgencyModel
+  agency: AgencyModel,
+  property: PropertyModel                               
 } = require("../models");
 const bcrypt = require("bcrypt");
 const { Op, where , Sequelize} = require('sequelize');
@@ -272,12 +273,48 @@ const getAgencyById = asyncHandler(async (req, res) => {
   const { id } = req.body;
   try {
     const agency = await AgencyModel.findByPk(id);
-    res.status(200).json({ success: true, agency, message: 'Agency get successfully' });
+    let properties = [];
+    if (agency) {
+      properties = await PropertyModel.findAll({ where: { userId: agency.userId } });
+      console.log("properties: ", properties);
+    }
+
+    // Initialize counters
+    let totalSell = 0;
+    let totalRent = 0;
+    let propertySell = {};
+    let propertyRent = {};
+
+    // Iterate through properties to count based on status and type
+    properties.forEach(property => {
+      if (!property.isDeleted) {
+        if (property.status === 'sale') {
+          totalSell++;
+          propertySell[property.propertyType] = (propertySell[property.propertyType] || 0) + 1;
+        } else if (property.status === 'rent') {
+          totalRent++;
+          propertyRent[property.propertyType] = (propertyRent[property.propertyType] || 0) + 1;
+        }
+      }
+    });
+    const recentProperties = properties.slice(0, 4);
+
+    res.status(200).json({
+      success: true,
+      agency,
+      recentProperties,
+      totalSell,
+      totalRent,
+      propertySell,
+      propertyRent,
+      message: 'Agency get successfully'
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: 'Failed to get agency' });
   }
-});                                                                                      
+});
+                                                                                     
   
 module.exports = {
   resetProfilePassword,
