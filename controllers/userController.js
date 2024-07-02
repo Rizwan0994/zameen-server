@@ -267,12 +267,21 @@ const findAgencyAddressAndCompanyByCity = asyncHandler(async (req, res) => {
       attributes: ['agencyAddress', 'companyEmail']
     });
 
-    res.status(200).json({ success: true, agencies, message: 'Agency address and company email get successfully' });
+    // Extracting addresses and emails into separate arrays
+    const agencyAddresses = agencies.map(agency => agency.agencyAddress);
+    const companyEmails = agencies.map(agency => agency.companyEmail);
+
+    res.status(200).json({ 
+      success: true, 
+      addresses: agencyAddresses, 
+      companyEmails, 
+      message: 'Agency address and company email get successfully' 
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: 'Failed to get agency address and company email' });
   }
-}); 
+});
 
 //get agency by agency id
 const getAgencyById = asyncHandler(async (req, res) => {
