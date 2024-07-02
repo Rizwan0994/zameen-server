@@ -133,9 +133,9 @@ const addOrUpdateAgency = asyncHandler(async (req, res) => {
   }
 
   // Check if user is an agent
-  if (!user.isAgent) {
-    return res.status(400).json({ success: false, message: 'User is not an agent' });
-  }
+  // if (!user.isAgent) {
+  //   return res.status(400).json({ success: false, message: 'User is not an agent' });
+  // }
 
   try {
     // Create or update agency
