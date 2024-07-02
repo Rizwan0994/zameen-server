@@ -235,28 +235,33 @@ const getAllAgencies = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to get agencies' });
   }
 });
-const getAllAgenciesCities= asyncHandler(async (req, res) => {
+const getAllAgenciesCities = asyncHandler(async (req, res) => {
   try {
     const cityObjects = await AgencyModel.findAll({
       attributes: ['city'],
       group: ['city']
     });
 
-    const agencyCities = cityObjects.map(cityObject => cityObject.city);
+    // Convert cities to camel case and remove duplicates
+    const agencyCities = [...new Set(cityObjects.map(cityObject => {
+      return cityObject.city.charAt(0).toUpperCase() + cityObject.city.slice(1).toLowerCase();
+    }))];
 
     res.status(200).json({ success: true, agencyCities, message: 'Cities get successfully' });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: 'Failed to get cities' });
   }
-});  
+});
 
 const findAgencyAddressAndCompanyByCity = asyncHandler(async (req, res) => {
   const { city } = req.body;
   try {
     const agencies = await AgencyModel.findAll({
       where: {
-        city
+        agencyAddress: {
+          [Op.iLike]: `%${city}%`
+        }
       },
       attributes: ['agencyAddress', 'companyEmail']
     });
@@ -301,12 +306,12 @@ const getAgencyById = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       success: true,
-      agency,
-      recentProperties,
       totalSell,
       totalRent,
       propertySell,
       propertyRent,
+      agency,
+      recentProperties,
       message: 'Agency get successfully'
     });
   } catch (error) {
