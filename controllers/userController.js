@@ -61,6 +61,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       address: data.address,
       country: data.country,
       city: data.city,
+      role:data.role||user.role,
       whatsappNumber: data.whatsappNumber
     });
 
