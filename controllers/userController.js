@@ -61,6 +61,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       address: data.address,
       country: data.country,
       city: data.city,
+      role:data.role||user.role,
       whatsappNumber: data.whatsappNumber
     });
 
@@ -132,9 +133,9 @@ const addOrUpdateAgency = asyncHandler(async (req, res) => {
   }
 
   // Check if user is an agent
-  if (!user.isAgent) {
-    return res.status(400).json({ success: false, message: 'User is not an agent' });
-  }
+  // if (!user.isAgent) {
+  //   return res.status(400).json({ success: false, message: 'User is not an agent' });
+  // }
 
   try {
     // Create or update agency
